@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ art.name }}
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="test">
+                    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            {% for image in art.images %}
+                                <button type="button" data-bs-target="#carouselExampleIndicators"
+                                        data-bs-slide-to="{{ loop.index0 }}" {% if loop.first %} class="active" {% endif %}></button>
+                            {% endfor %}
+                        </div>
+                        <div class="carousel-inner">
+                            {% for image in art.images %}
+                                <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                    <img src="/uploads/{{ image.name }}" class="d-block w-100" alt="First slide">
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                                data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                                data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mt-4">
+                    <p><u><strong>{{ art.name }}</u> Origine : {{ art.origine }}</strong></p>
+                </div>
+                <div class="mt-2">
+                    <p><strong>Description de l'article :</strong> <br> {{ art.description | raw }}</p>
+                </div>
+                <div class="mt-4">
+                    <p><strong>Prix à l'unité :&nbsp;</strong>{{ art.prix }}&euro;</p>
+                </div>
+                <div class="mt-4">
+                    <p><strong>Catégorie de l'article : </strong>{{ art.idCat.nameCat }}</p>
+                </div>
+                <div class="mt-4">
+                    <p><strong>En stock :</strong><br>{{ art.quantite }} disponible(s)</p>
+                </div>
+            </div>
+            {% if is_granted('ROLE_ACHETEUR') %}
+                {% if art.quantite != 0 %}
+                    <div class="col-md-8">
+                    </div>
+                    <div class="col-md-4">
+                        <a href='#data-suppression' data-toggle='modal'
+                           data-message='Voulez vous ajouter cet article ?'
+                           data-suppression="{{ path('ajout_article',{'id' : art.id}) }}" class='btn btn-success'>
+                            <img src="https://img.icons8.com/color/50/000000/shopping-basket.png"/> Ajouteur au panier
+                        </a>
+
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="data-suppression" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter cet article</h5>
+                    <button type="button" class="btn btn-dark" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Etes vous sur de vouloir ajouter cet article </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <a href="" class="btn btn-success" id="btnSuppr">Ajouter</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        $('a[data-suppression]').click(function () {
+            var lien = $(this).attr("data-suppression"); // recupère le lien du boutton "poubelle"
+            console.log(lien);
+            var message = $(this).attr("data-message"); // recupère le lien du boutton "poubelle"
+            $("#btnSuppr").attr("href", lien); // on écrit ce lien sur le bouton "supprimer"
+            $(".modal-body").text(message);
+        });
+    </script>
+{% endblock %}
